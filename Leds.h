@@ -1,5 +1,7 @@
 #include "Arduino.h"
 #include <FastLED.h>
+#include "Config.h"
+
 
 class MatrixLed {
 private:
@@ -71,14 +73,13 @@ public:
       leds[i] = colors[verticalMap[i]];
     }
 
-    startHue += 1;
+    startHue += 5;
     FastLED.show();
-    delay(50);
   }
 
   void diagonal() {
     FastLED.clear();
-    colors[0] = CHSV(startHue + (256 / 7), 255, 80);
+    colors[0] = CHSV(startHue % 255, 255, 80);
     for (int i = 7; i > 0; i--) {
       colors[i] = colors[i - 1];
     }
@@ -89,92 +90,6 @@ public:
 
     startHue += 1;
     FastLED.show();
-    delay(50);
   }
 
-  // Efecto de serpiente que recorre la matriz
-  void snakeEffect(uint8_t wait = 100) {
-    CRGB snakeColor = CRGB(0, 255, 0);  // Verde
-
-    // Generar la ruta de la serpiente dinámicamente
-    for (int i = 0; i < numLeds; i++) {
-      FastLED.clear();
-
-      // Dibujar la cabeza y cola de la serpiente
-      for (int j = 0; j < 3; j++) {
-        if (i - j >= 0) {
-          int x = (i - j) % matrixWidth;
-          int y = ((i - j) / matrixWidth) % matrixHeight;
-          if (y % 2 == 1) {
-            x = matrixWidth - 1 - x;  // Zigzag
-          }
-          leds[xy2pos(x, y)] = snakeColor;
-          leds[xy2pos(x, y)].fadeToBlackBy(j * 85);
-        }
-      }
-      FastLED.show();
-      delay(wait);
-    }
-  }
-
-  void rotatingEffect(uint8_t wait = 200) {
-    CRGB rotateColor = CRGB(0, 0, 255);  // Azul
-
-    for (int rotation = 0; rotation < 4; rotation++) {
-      FastLED.clear();
-
-      for (int i = 0; i < matrixWidth; i++) {
-        switch (rotation) {
-          case 0:  // Horizontal
-            leds[xy2pos(i, matrixHeight / 2)] = rotateColor;
-            break;
-          case 1:  // Diagonal
-            if (i < matrixHeight) {
-              leds[xy2pos(i, i)] = rotateColor;
-            }
-            break;
-          case 2:  // Vertical
-            leds[xy2pos(matrixWidth / 2, i)] = rotateColor;
-            break;
-          case 3:  // Diagonal inversa
-            if (i < matrixHeight) {
-              leds[xy2pos(i, matrixHeight - 1 - i)] = rotateColor;
-            }
-            break;
-        }
-      }
-      FastLED.show();
-      delay(wait);
-    }
-  }
-
-  void waveEffect(uint8_t wait = 150) {
-    CRGB waveColor = CRGB(255, 0, 0);  // Rojo
-
-    // Ola horizontal
-    for (int x = 0; x < matrixWidth * 2; x++) {
-      FastLED.clear();
-      for (int y = 0; y < matrixHeight; y++) {
-        int pos = x - y;
-        if (pos >= 0 && pos < matrixWidth) {
-          leds[xy2pos(pos, y)] = waveColor;
-        }
-      }
-      FastLED.show();
-      delay(wait);
-    }
-
-    // Ola vertical
-    for (int y = 0; y < matrixHeight * 2; y++) {
-      FastLED.clear();
-      for (int x = 0; x < matrixWidth; x++) {
-        int pos = y - x;
-        if (pos >= 0 && pos < matrixHeight) {
-          leds[xy2pos(x, pos)] = waveColor;
-        }
-      }
-      FastLED.show();
-      delay(wait);
-    }
-  }
 };
