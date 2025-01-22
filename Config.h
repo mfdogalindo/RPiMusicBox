@@ -1,7 +1,7 @@
 // WaveShare RP2040 Nano
 
-//#define UART_TX   0
-//#define UART_RX   1
+#define MP3_TX      0
+#define MP3_RX      1
 #define PIN_SCK     2
 #define PIN_MOSI    3
 #define PIN_MISO    4

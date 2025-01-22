@@ -5,6 +5,7 @@
 #include <Adafruit_ST7789.h>
 #include "hardware/clocks.h" // Librería para controlar los relojes del RP2040
 #include "RPi_Pico_TimerInterrupt.h"
+#include <DFRobotDFPlayerMini.h>
 
 
 float p = 3.1415926;
@@ -13,6 +14,7 @@ MatrixLed ledsMatrix(4,4);
 Adafruit_NeoPixel pixels(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 Adafruit_ST7789 tft = Adafruit_ST7789(&SPI, TFT_CS, TFT_DC, TFT_RST);   // I added reference to SPI1, not needed to use SPI0
 RPI_PICO_Timer ITimer2(2);
+DFRobotDFPlayerMini dfPlayer;
 
 bool TimerHandler2(struct repeating_timer *t)
 {  
@@ -42,6 +44,32 @@ void setup() {
 
   tft.init(240, 320);
   tft.fillScreen(ST77XX_BLACK);
+
+    // Inicializar Serial para debuggear
+  Serial.begin(115200);
+  
+  // Inicializar UART0 (Serial1) para comunicación con DFPlayer
+  Serial1.setTX(MP3_TX);
+  Serial1.setRX(MP3_RX);
+  Serial1.begin(9600);
+  
+  Serial.println("Inicializando DFPlayer...");
+  
+  // Inicializar DFPlayer usando Serial1 (UART0)
+  if (!dfPlayer.begin(Serial1)) {
+    Serial.println("Error al iniciar DFPlayer:");
+    Serial.println("1. Revisa las conexiones");
+    Serial.println("2. Inserta una tarjeta SD");
+    while(true);
+  }
+
+  // Esperar a que el módulo se estabilice
+  delay(1000);
+  
+  Serial.println("Iniciado!");
+
+  // Mostrar información de la tarjeta SD
+  mostrarInfoSD();
 
 }
 
@@ -292,3 +320,33 @@ void mediabuttons() {
   tft.fillTriangle(42, 20, 42, 60, 90, 40, ST77XX_GREEN);
 }
 
+
+void mostrarInfoSD() {
+  Serial.println("\n=== Información de la tarjeta SD ===");
+  
+  // Obtener número total de archivos en la SD
+  uint16_t totalFiles = dfPlayer.readFileCounts();
+  Serial.print("Total de archivos MP3: ");
+  Serial.println(totalFiles);
+  
+  // Obtener pista actual
+  uint16_t currentTrack = dfPlayer.readCurrentFileNumber();
+  Serial.print("Pista actual: ");
+  Serial.println(currentTrack);
+  
+  Serial.println("\nListado de pistas disponibles:");
+  for (uint16_t i = 1; i <= totalFiles; i++) {
+    Serial.print("Pista ");
+    Serial.print(i);
+    // Si es la pista actual, marcarla
+    if (i == currentTrack) {
+      Serial.println(" [Reproduciendo]");
+    } else {
+      Serial.println();
+    }
+  }
+  
+  // Mostrar estado del volumen
+  Serial.print("\nVolumen actual: ");
+  Serial.println(dfPlayer.readVolume());
+}
