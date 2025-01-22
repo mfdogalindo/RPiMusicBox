@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include <FastLED.h>
-#include "Config.h"
+
+#define LED_PIN 29
 
 
 class MatrixLed {
