@@ -8,6 +8,7 @@ Adafruit_ST7789 tft = Adafruit_ST7789(&SPI, TFT_CS, TFT_DC, TFT_RST);   // I add
 RPI_PICO_Timer ITimer2(2);
 DFRobotDFPlayerMini dfPlayer;
 BMI160 IMU(Wire1);
+Character* character;
 
 calData calib = { 0 };  //Calibration data
 AccelData accelData;    //Sensor data
@@ -77,7 +78,7 @@ void setup() {
 
   tft.fillScreen(ST77XX_BLACK);
   drawLabels();
-
+  character = new Character(0);
 }
 
 // Variables globales para mantener la posición del texto
@@ -110,6 +111,8 @@ void loop() {
   currentY += TEXT_HEIGHT;
   updateValue(gyroData.gyroZ, VALUE_X, currentY);
   
+  character->update(tft, accelData.accelX, accelData.accelY, accelData.accelZ);
+
   delay(100);  // Podemos reducir el delay ya que no hay parpadeo
 }
 

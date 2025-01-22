@@ -28,3 +28,4 @@
 #include <DFRobotDFPlayerMini.h>
 #include "FastIMU.h"
 #include <Wire.h>
+#include "Character.hpp"
