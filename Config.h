@@ -8,8 +8,8 @@
 #define TFT_CS      5 
 #define TFT_DC      6  
 #define TFT_RST     7  
-#define LCD_WIDTH   320
-#define LCD_HEIGHT  240
+#define LCD_WIDTH   240
+#define LCD_HEIGHT  320
 
 #define I2C_SDA     26
 #define I2C_SCL     27
@@ -29,3 +29,12 @@
 #include "FastIMU.h"
 #include <Wire.h>
 #include "Character.hpp"
+
+#include "SpriteData.h"
+
+#include "DisplayRenderer.h"
+
+#include "gladis_sprite.h"
+
+//#define LCD_WIDTH 240
+//#define LCD_HEIGHT 320

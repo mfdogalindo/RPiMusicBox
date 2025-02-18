@@ -21,6 +21,8 @@ bool TimerHandler2(struct repeating_timer *t)
   return true;
 }
 
+DisplayRenderer renderer(tft, LCD_WIDTH, LCD_HEIGHT);
+AnimatedSprite sprite(gladis_data, 100, 4);
 
 void setup() {
 #if defined(NEOPIXEL_POWER)
@@ -78,6 +80,11 @@ void setup() {
 
   tft.fillScreen(ST77XX_BLACK);
   drawLabels();
+
+
+  //uint8_t spriteId = renderer.createSprite(spriteData, 8, 8, palette, 4);
+  sprite.play();
+
   character = new Character(0);
 }
 
@@ -88,6 +95,7 @@ int currentY = 0;           // Para seguimiento de posición Y
 
 
 void loop() {
+  
   IMU.update();
   currentY = TEXT_HEIGHT;  // Reiniciar posición Y después de las etiquetas
   
@@ -111,8 +119,18 @@ void loop() {
   currentY += TEXT_HEIGHT;
   updateValue(gyroData.gyroZ, VALUE_X, currentY);
   
-  character->update(tft, accelData.accelX, accelData.accelY, accelData.accelZ);
+  //character->update(tft, accelData.accelX, accelData.accelY, accelData.accelZ);
 
+sprite.update();
+if (sprite.isPlaying()) {
+    renderer.drawSprite(
+        sprite.getCurrentFrame(),
+        sprite.getWidth(),
+        sprite.getHeight(),
+        60, 180,
+        sprite.getScale()
+    );
+}
   delay(100);  // Podemos reducir el delay ya que no hay parpadeo
 }
 
